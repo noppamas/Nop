@@ -32,6 +32,7 @@ class _TextPaneState extends State<TextPane> {
     spanBuilder: _buildLineSpan,
   );
   int _loadedGeneration = -1;
+  int _textGeneration = -1;
 
   /// Matched bracket/quote columns by line, for the caret's current pair.
   Map<int, Set<int>> _matchedColumns = const {};
@@ -125,13 +126,40 @@ class _TextPaneState extends State<TextPane> {
     super.dispose();
   }
 
-  /// Loads the document text when a different document was opened.
+  /// Loads the document text when a different document was opened, or when
+  /// the text changed outside this pane (undo, redo).
   void _syncFromDocument() {
     final controller = widget.controller;
-    if (controller.loadGeneration == _loadedGeneration) return;
-    _loadedGeneration = controller.loadGeneration;
-    _code.text = controller.document?.text ?? '';
-    _code.clearHistory();
+    final text = controller.document?.text ?? '';
+    if (controller.loadGeneration != _loadedGeneration) {
+      _loadedGeneration = controller.loadGeneration;
+      _textGeneration = controller.textGeneration;
+      _code.text = text;
+      _code.clearHistory();
+      return;
+    }
+    if (controller.textGeneration != _textGeneration) {
+      _textGeneration = controller.textGeneration;
+      final before = _code.text;
+      if (before == text) return;
+      final caret = changeEnd(before, text);
+      _code.text = text;
+      _code.selection = _selectionAt(text, caret);
+      _code.makeCursorVisible();
+    }
+  }
+
+  /// A collapsed selection at UTF-16 [offset] of [text].
+  static CodeLineSelection _selectionAt(String text, int offset) {
+    var line = 0;
+    var lineStart = 0;
+    for (var i = 0; i < offset && i < text.length; i++) {
+      if (text.codeUnitAt(i) == 0x0A) {
+        line++;
+        lineStart = i + 1;
+      }
+    }
+    return CodeLineSelection.collapsed(index: line, offset: offset - lineStart);
   }
 
   /// Tab: indents every selected line, or the caret's line when nothing is
@@ -225,11 +253,34 @@ class _TextPaneState extends State<TextPane> {
 }
 
 /// re_editor's default shortcuts, minus the ones the app handles itself
-/// (Cmd+S is Save in the editor screen).
+/// (save, undo and redo are handled by the editor screen).
+/// Offset in [after] just past the part that differs from [before], where
+/// the caret goes after undo or redo.
+int changeEnd(String before, String after) {
+  var prefix = 0;
+  final min = before.length < after.length ? before.length : after.length;
+  while (prefix < min &&
+      before.codeUnitAt(prefix) == after.codeUnitAt(prefix)) {
+    prefix++;
+  }
+  var suffix = 0;
+  while (suffix < min - prefix &&
+      before.codeUnitAt(before.length - 1 - suffix) ==
+          after.codeUnitAt(after.length - 1 - suffix)) {
+    suffix++;
+  }
+  return after.length - suffix;
+}
+
 class _EditorShortcuts extends CodeShortcutsActivatorsBuilder {
   const _EditorShortcuts();
 
-  static const _appOwned = {CodeShortcutType.save};
+  static const _appOwned = {
+    CodeShortcutType.save,
+    // One shared history lives in EditorController (decision 26).
+    CodeShortcutType.undo,
+    CodeShortcutType.redo,
+  };
 
   @override
   List<ShortcutActivator>? build(CodeShortcutType type) {
