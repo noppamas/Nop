@@ -130,4 +130,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get saveErrorMessage =>
       'The file could not be written. Your document is still open and unchanged.';
+
+  @override
+  String get documentEdited => 'Edited';
 }

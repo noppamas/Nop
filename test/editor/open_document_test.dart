@@ -2,10 +2,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_better_editor/app/app.dart';
 import 'package:json_better_editor/editor/document_title.dart';
-import 'package:json_better_editor/editor/plain_text_view.dart';
+import 'package:json_better_editor/editor/text_pane.dart';
 import 'package:json_better_editor/editor/toolbar/editor_toolbar.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../support/editor_finders.dart';
 import '../support/fake_document_files.dart';
 
 const validText = '{\n  "name": "ตัวอย่าง",\n  "count": 3\n}\n';
@@ -55,18 +56,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(titleText(tester), 'sample.json');
-    final text = tester.widget<SelectableText>(
-      find.byKey(PlainTextView.textKey),
-    );
-    expect(text.data, validText);
-    // The view scrolls (vertically and horizontally) for long documents.
-    expect(
-      find.descendant(
-        of: find.byType(PlainTextView),
-        matching: find.byType(SingleChildScrollView),
-      ),
-      findsNWidgets(2),
-    );
+    expect(editorText(tester), validText);
   });
 
   testWidgets('a long document can be scrolled', (tester) async {
@@ -78,11 +68,19 @@ void main() {
     await tester.tap(find.byKey(ToolbarKeys.open));
     await tester.pumpAndSettle();
 
-    final before = tester.getTopLeft(find.byKey(PlainTextView.textKey)).dy;
-    await tester.drag(find.byType(PlainTextView), const Offset(0, -400));
+    double maxOffset() => tester
+        .stateList<ScrollableState>(
+          find.descendant(
+            of: find.byType(TextPane),
+            matching: find.byType(Scrollable),
+          ),
+        )
+        .map((s) => s.position.pixels)
+        .fold(0, (a, b) => a > b ? a : b);
+    expect(maxOffset(), 0);
+    await tester.drag(find.byType(TextPane), const Offset(0, -400));
     await tester.pumpAndSettle();
-    final after = tester.getTopLeft(find.byKey(PlainTextView.textKey)).dy;
-    expect(after, lessThan(before));
+    expect(maxOffset(), greaterThan(0));
   });
 
   testWidgets('cancelling the dialog leaves the state unchanged', (
@@ -95,7 +93,7 @@ void main() {
     await tester.tap(find.byKey(ToolbarKeys.open));
     await tester.pumpAndSettle();
     expect(titleText(tester), 'Untitled');
-    expect(find.byType(PlainTextView), findsNothing);
+    expect(find.byType(TextPane), findsNothing);
 
     // A document open: cancelling keeps it.
     files.disk['/tmp/a.json'] = validText;
@@ -108,9 +106,6 @@ void main() {
 
     expect(files.openDialogCount, 3);
     expect(titleText(tester), 'a.json');
-    expect(
-      tester.widget<SelectableText>(find.byKey(PlainTextView.textKey)).data,
-      validText,
-    );
+    expect(editorText(tester), validText);
   });
 }

@@ -7,11 +7,11 @@ import 'package:json_better_editor/editor/dialogs/save_error_dialog.dart';
 import 'package:json_better_editor/editor/document_title.dart';
 import 'package:json_better_editor/editor/editor_controller.dart';
 import 'package:json_better_editor/editor/editor_screen.dart';
-import 'package:json_better_editor/editor/plain_text_view.dart';
 import 'package:json_better_editor/editor/toolbar/editor_toolbar.dart';
 import 'package:json_better_editor/l10n/generated/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../support/editor_finders.dart';
 import '../support/fake_document_files.dart';
 
 // Deliberately not pretty-printed: Phase 1 saves the text as-is.
@@ -107,10 +107,7 @@ void main() {
     await tester.tap(find.byKey(SaveErrorDialogKeys.ok));
     await tester.pumpAndSettle();
     expect(title(tester), 'data.json');
-    expect(
-      tester.widget<SelectableText>(find.byKey(PlainTextView.textKey)).data,
-      original,
-    );
+    expect(editorText(tester), original);
 
     // Save As to a read-only location also fails without switching path.
     files.readOnly.add('/locked/new.json');

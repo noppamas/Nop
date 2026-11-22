@@ -4,10 +4,11 @@ import 'json_node.dart';
 class JsonDocument {
   const JsonDocument({required this.text, required this.root, this.path});
 
-  /// The document text exactly as loaded (Phase 1 shows it as-is).
+  /// The current document text.
   final String text;
 
-  /// The parsed model shared by the Text and Node panes.
+  /// The parsed model shared by the Text and Node panes: the last valid
+  /// parse of [text].
   final JsonNode root;
 
   /// Absolute file path, or null for a document never saved.
