@@ -47,3 +47,16 @@
 | # | Topic | Decision |
 |---|-------|----------|
 | 31 | Node mode paste shortcuts | Final: Cmd+V = paste as child; Cmd+Shift+V = paste as sibling after; Cmd+Opt+V = paste as sibling before. Cmd+Opt+Shift+V dropped. |
+
+## 2026-11-22 — Phase 2 planning (decisions 32–37)
+
+Confirmed by Noppamas in the project thread (accepted all recommendations).
+
+| # | Topic | Decision |
+|---|-------|----------|
+| 32 | Text editor engine | Build the Text pane on the `re_editor` package (line numbers, folding, autocomplete, large files). |
+| 33 | Save formatting style | Pretty-print with 2-space indent and a trailing newline. |
+| 34 | Word wrap toggle | View menu item with shortcut Opt+Z, not on the toolbar. Persisting the choice comes with Settings (Phase 4). |
+| 35 | New with a document open | Opens a new window as another app instance. A new document starts as `{}`. |
+| 36 | Unsaved changes | Close, Open (which replaces the document in the window) and Quit ask Save / Don’t Save / Cancel, as standard on macOS. |
+| 37 | Text-mode search | Case-insensitive; matches inside keys and values (string, number, true/false/null) only, not punctuation. |
