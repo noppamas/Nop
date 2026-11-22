@@ -41,4 +41,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolbarSettings => 'Settings';
+
+  @override
+  String get jsonFileTypeLabel => 'JSON';
 }

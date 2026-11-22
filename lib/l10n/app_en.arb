@@ -9,21 +9,43 @@
     "description": "Document title shown when no file is open."
   },
   "toolbarNew": "New",
-  "@toolbarNew": {"description": "Toolbar tooltip: create a new document."},
+  "@toolbarNew": {
+    "description": "Toolbar tooltip: create a new document."
+  },
   "toolbarOpen": "Open",
-  "@toolbarOpen": {"description": "Toolbar tooltip: open a JSON file."},
+  "@toolbarOpen": {
+    "description": "Toolbar tooltip: open a JSON file."
+  },
   "toolbarSearch": "Search",
-  "@toolbarSearch": {"description": "Toolbar tooltip: search keys and values."},
+  "@toolbarSearch": {
+    "description": "Toolbar tooltip: search keys and values."
+  },
   "toolbarLayoutTextOnly": "Text only",
-  "@toolbarLayoutTextOnly": {"description": "Toolbar tooltip: show only the Text pane."},
+  "@toolbarLayoutTextOnly": {
+    "description": "Toolbar tooltip: show only the Text pane."
+  },
   "toolbarLayoutNodeOnly": "Node only",
-  "@toolbarLayoutNodeOnly": {"description": "Toolbar tooltip: show only the Node pane."},
+  "@toolbarLayoutNodeOnly": {
+    "description": "Toolbar tooltip: show only the Node pane."
+  },
   "toolbarLayoutSplit": "Split",
-  "@toolbarLayoutSplit": {"description": "Toolbar tooltip: show Text and Node side by side."},
+  "@toolbarLayoutSplit": {
+    "description": "Toolbar tooltip: show Text and Node side by side."
+  },
   "toolbarLanguage": "Language",
-  "@toolbarLanguage": {"description": "Toolbar tooltip: switch the UI language."},
+  "@toolbarLanguage": {
+    "description": "Toolbar tooltip: switch the UI language."
+  },
   "toolbarTheme": "Theme",
-  "@toolbarTheme": {"description": "Toolbar tooltip: toggle light or dark theme."},
+  "@toolbarTheme": {
+    "description": "Toolbar tooltip: toggle light or dark theme."
+  },
   "toolbarSettings": "Settings",
-  "@toolbarSettings": {"description": "Toolbar tooltip: open Settings."}
+  "@toolbarSettings": {
+    "description": "Toolbar tooltip: open Settings."
+  },
+  "jsonFileTypeLabel": "JSON",
+  "@jsonFileTypeLabel": {
+    "description": "File type name in the open and save dialogs."
+  }
 }
