@@ -11,4 +11,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appTitle => 'JSON Better Editor';
+
+  @override
+  String get untitledDocument => 'Untitled';
+
+  @override
+  String get toolbarNew => 'New';
+
+  @override
+  String get toolbarOpen => 'Open';
+
+  @override
+  String get toolbarSearch => 'Search';
+
+  @override
+  String get toolbarLayoutTextOnly => 'Text only';
+
+  @override
+  String get toolbarLayoutNodeOnly => 'Node only';
+
+  @override
+  String get toolbarLayoutSplit => 'Split';
+
+  @override
+  String get toolbarLanguage => 'Language';
+
+  @override
+  String get toolbarTheme => 'Theme';
+
+  @override
+  String get toolbarSettings => 'Settings';
 }
