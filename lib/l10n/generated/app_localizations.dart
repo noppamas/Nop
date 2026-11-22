@@ -159,6 +159,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get toolbarSettings;
+
+  /// File type name in the open and save dialogs.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON'**
+  String get jsonFileTypeLabel;
 }
 
 class _AppLocalizationsDelegate
