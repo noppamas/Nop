@@ -8,6 +8,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../platform/native_window.dart';
 import '../document/json_document.dart';
 import 'dialogs/open_error_dialog.dart';
+import 'dialogs/save_error_dialog.dart';
 import 'document_title.dart';
 import 'editor_controller.dart';
 import 'editor_layout.dart';
@@ -16,18 +17,25 @@ import 'toolbar/editor_toolbar.dart';
 
 /// The single-document editor window.
 class EditorScreen extends StatefulWidget {
-  const EditorScreen({super.key, this.files = const SystemDocumentFiles()});
+  const EditorScreen({
+    super.key,
+    this.files = const SystemDocumentFiles(),
+    this.controller,
+  });
 
   final DocumentFiles files;
+
+  /// Optional controller supplied by the caller (tests); otherwise the
+  /// screen creates and owns one.
+  final EditorController? controller;
 
   @override
   State<EditorScreen> createState() => _EditorScreenState();
 }
 
 class _EditorScreenState extends State<EditorScreen> {
-  late final EditorController _controller = EditorController(
-    files: widget.files,
-  );
+  late final EditorController _controller =
+      widget.controller ?? EditorController(files: widget.files);
   EditorLayout _layout = EditorLayout.split;
 
   @override
@@ -47,7 +55,7 @@ class _EditorScreenState extends State<EditorScreen> {
   @override
   void dispose() {
     _controller.removeListener(_updateWindowTitle);
-    _controller.dispose();
+    if (widget.controller == null) _controller.dispose();
     super.dispose();
   }
 
@@ -71,10 +79,35 @@ class _EditorScreenState extends State<EditorScreen> {
     }
   }
 
+  Future<void> _save({required bool saveAs}) async {
+    final strings = AppLocalizations.of(context);
+    final result = saveAs
+        ? await _controller.saveAs(
+            filterLabel: strings.jsonFileTypeLabel,
+            untitledName: strings.untitledDocument,
+          )
+        : await _controller.save(
+            filterLabel: strings.jsonFileTypeLabel,
+            untitledName: strings.untitledDocument,
+          );
+    if (!mounted) return;
+    if (result case SaveFailed(:final path)) {
+      await showSaveFailedDialog(context, fileName: fileNameOf(path));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CallbackShortcuts(
       bindings: {
+        const SingleActivator(LogicalKeyboardKey.keyS, meta: true): () =>
+            unawaited(_save(saveAs: false)),
+        const SingleActivator(
+          LogicalKeyboardKey.keyS,
+          meta: true,
+          shift: true,
+        ): () =>
+            unawaited(_save(saveAs: true)),
         const SingleActivator(LogicalKeyboardKey.keyO, meta: true): () =>
             unawaited(_open()),
       },

@@ -157,5 +157,18 @@
   "jsonExpectedCommaOrCloseBracket": "“,” or “]”",
   "@jsonExpectedCommaOrCloseBracket": {
     "description": "Inserted into JSON error messages."
+  },
+  "saveErrorTitle": "Can’t save “{fileName}”",
+  "@saveErrorTitle": {
+    "description": "Title of the dialog shown when saving fails.",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "saveErrorMessage": "The file could not be written. Your document is still open and unchanged.",
+  "@saveErrorMessage": {
+    "description": "Body of the dialog shown when saving fails."
   }
 }
