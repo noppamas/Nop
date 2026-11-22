@@ -33,7 +33,7 @@ class EditorScreen extends StatefulWidget {
   State<EditorScreen> createState() => _EditorScreenState();
 }
 
-class _EditorScreenState extends State<EditorScreen> {
+class _EditorScreenState extends State<EditorScreen> with UndoManagerClient {
   late final EditorController _controller =
       widget.controller ?? EditorController(files: widget.files);
   EditorLayout _layout = EditorLayout.split;
@@ -42,6 +42,39 @@ class _EditorScreenState extends State<EditorScreen> {
   void initState() {
     super.initState();
     _controller.addListener(_updateWindowTitle);
+    _controller.addListener(_publishUndoState);
+    _publishUndoState();
+  }
+
+  // Undo/redo (§3.5). The macOS Edit menu (Undo/Redo, Cmd+Z/Cmd+Shift+Z)
+  // reaches the app through Flutter's UndoManager; key presses that get to
+  // Flutter directly are handled by the shortcuts below.
+
+  void _publishUndoState() {
+    UndoManager.client = this;
+    UndoManager.setUndoState(canUndo: canUndo, canRedo: canRedo);
+  }
+
+  @override
+  bool get canUndo => _controller.canUndo;
+
+  @override
+  bool get canRedo => _controller.canRedo;
+
+  @override
+  void undo() => _controller.undo();
+
+  @override
+  void redo() => _controller.redo();
+
+  @override
+  void handlePlatformUndo(UndoDirection direction) {
+    switch (direction) {
+      case UndoDirection.undo:
+        undo();
+      case UndoDirection.redo:
+        redo();
+    }
   }
 
   /// Keeps the native window title (Window menu, Mission Control) in step
@@ -55,6 +88,8 @@ class _EditorScreenState extends State<EditorScreen> {
   @override
   void dispose() {
     _controller.removeListener(_updateWindowTitle);
+    _controller.removeListener(_publishUndoState);
+    if (UndoManager.client == this) UndoManager.client = null;
     if (widget.controller == null) _controller.dispose();
     super.dispose();
   }
@@ -100,6 +135,9 @@ class _EditorScreenState extends State<EditorScreen> {
   Widget build(BuildContext context) {
     return CallbackShortcuts(
       bindings: {
+        const SingleActivator(LogicalKeyboardKey.keyZ, meta: true): undo,
+        const SingleActivator(LogicalKeyboardKey.keyZ, meta: true, shift: true):
+            redo,
         const SingleActivator(LogicalKeyboardKey.keyS, meta: true): () =>
             unawaited(_save(saveAs: false)),
         const SingleActivator(

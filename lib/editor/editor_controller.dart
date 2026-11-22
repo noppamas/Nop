@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../document/edit_history.dart';
 import '../document/json_document.dart';
 import '../document/json_parser.dart';
 import '../files/document_files.dart';
@@ -69,9 +70,14 @@ class SaveFailed extends SaveResult {
 
 /// Holds the open document and runs file commands.
 class EditorController extends ChangeNotifier {
-  EditorController({required this.files});
+  EditorController({required this.files, EditHistory? history})
+    : history = history ?? EditHistory();
 
   final DocumentFiles files;
+
+  /// One undo/redo history for the document (decision 26).
+  final EditHistory history;
+  int _textGeneration = 0;
 
   JsonDocument? _document;
   String? _savedText;
@@ -93,6 +99,35 @@ class EditorController extends ChangeNotifier {
   /// saves keep it. Views use it to know when to replace their text.
   int get loadGeneration => _loadGeneration;
 
+  /// Changes when the text was changed from outside the Text pane (undo,
+  /// redo; Node edits in Phase 3). The Text pane then reloads the text.
+  int get textGeneration => _textGeneration;
+
+  bool get canUndo => _document != null && history.canUndo;
+  bool get canRedo => _document != null && history.canRedo;
+
+  /// Undoes the last edit (Cmd+Z).
+  void undo() {
+    final document = _document;
+    if (document == null) return;
+    final text = history.undo(document.text);
+    if (text != null) _setTextFromOutside(text);
+  }
+
+  /// Redoes the last undone edit (Cmd+Shift+Z).
+  void redo() {
+    final document = _document;
+    if (document == null) return;
+    final text = history.redo(document.text);
+    if (text != null) _setTextFromOutside(text);
+  }
+
+  void _setTextFromOutside(String text) {
+    _applyText(text);
+    _textGeneration++;
+    notifyListeners();
+  }
+
   /// Replaces the open document, for example with a new one. The given text
   /// counts as saved.
   void setDocument(JsonDocument? document) {
@@ -105,6 +140,7 @@ class EditorController extends ChangeNotifier {
     _savedText = document?.text;
     _textIsValid = true;
     _loadGeneration++;
+    history.clear();
   }
 
   /// Applies an edit from the Text pane: keeps the text and, when it is
@@ -112,6 +148,13 @@ class EditorController extends ChangeNotifier {
   void updateText(String text) {
     final document = _document;
     if (document == null || document.text == text) return;
+    history.record(document.text, text);
+    _applyText(text);
+    notifyListeners();
+  }
+
+  void _applyText(String text) {
+    final document = _document!;
     final parsed = parseJson(text);
     _textIsValid = parsed is JsonParseSuccess;
     _document = JsonDocument(
@@ -119,7 +162,6 @@ class EditorController extends ChangeNotifier {
       root: parsed is JsonParseSuccess ? parsed.root : document.root,
       path: document.path,
     );
-    notifyListeners();
   }
 
   /// Saves to the document's current path, or asks for one (Save As) if it
