@@ -44,4 +44,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get jsonFileTypeLabel => 'JSON';
+
+  @override
+  String get dialogOk => 'OK';
+
+  @override
+  String openErrorTitle(String fileName) {
+    return 'Can’t open “$fileName”';
+  }
+
+  @override
+  String get invalidJsonMessage =>
+      'This file is not valid JSON, so it was not opened.';
+
+  @override
+  String invalidJsonPosition(int line, int column) {
+    return 'Line $line, column $column';
+  }
+
+  @override
+  String get readFailedMessage => 'The file could not be read.';
+
+  @override
+  String get jsonErrorEmptyDocument => 'The file is empty.';
+
+  @override
+  String jsonErrorUnexpectedEnd(String expected) {
+    return 'The file ends where $expected was expected.';
+  }
+
+  @override
+  String jsonErrorUnexpectedCharacter(String found, String expected) {
+    return 'Found “$found” where $expected was expected.';
+  }
+
+  @override
+  String get jsonErrorTrailingText =>
+      'There is extra text after the JSON value.';
+
+  @override
+  String get jsonErrorUnterminatedString =>
+      'A string is missing its closing quote.';
+
+  @override
+  String get jsonErrorControlCharacter =>
+      'A string contains a control character (such as a raw line break).';
+
+  @override
+  String get jsonErrorInvalidEscape =>
+      'A string contains an invalid escape sequence.';
+
+  @override
+  String get jsonErrorInvalidUnicodeEscape =>
+      'A string contains an invalid \\u escape.';
+
+  @override
+  String get jsonErrorInvalidNumber => 'A number is not written correctly.';
+
+  @override
+  String get jsonErrorLeadingZero => 'A number starts with an extra zero.';
+
+  @override
+  String get jsonErrorTooDeep => 'The data is nested too deeply.';
+
+  @override
+  String get jsonExpectedValue => 'a value';
+
+  @override
+  String get jsonExpectedKey => 'a key in double quotes';
+
+  @override
+  String get jsonExpectedColon => '“:”';
+
+  @override
+  String get jsonExpectedCommaOrCloseBrace => '“,” or “}”';
+
+  @override
+  String get jsonExpectedCommaOrCloseBracket => '“,” or “]”';
 }

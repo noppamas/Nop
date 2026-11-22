@@ -6,6 +6,8 @@ import 'package:material_ui/material_ui.dart';
 import '../files/document_files.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../platform/native_window.dart';
+import '../document/json_document.dart';
+import 'dialogs/open_error_dialog.dart';
 import 'document_title.dart';
 import 'editor_controller.dart';
 import 'editor_layout.dart';
@@ -51,7 +53,22 @@ class _EditorScreenState extends State<EditorScreen> {
 
   Future<void> _open() async {
     final strings = AppLocalizations.of(context);
-    await _controller.open(filterLabel: strings.jsonFileTypeLabel);
+    final result = await _controller.open(
+      filterLabel: strings.jsonFileTypeLabel,
+    );
+    if (!mounted) return;
+    switch (result) {
+      case OpenInvalidJson(:final path, :final error):
+        await showInvalidJsonDialog(
+          context,
+          fileName: fileNameOf(path),
+          error: error,
+        );
+      case OpenReadFailed(:final path):
+        await showReadFailedDialog(context, fileName: fileNameOf(path));
+      case OpenCancelled() || OpenSucceeded():
+        break;
+    }
   }
 
   @override
