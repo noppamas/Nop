@@ -4,6 +4,7 @@ import 'package:json_better_editor/document/json_node.dart';
 import 'package:json_better_editor/editor/document_title.dart';
 import 'package:json_better_editor/editor/editor_controller.dart';
 import 'package:json_better_editor/editor/editor_screen.dart';
+import 'package:json_better_editor/editor/syntax/syntax_style.dart';
 import 'package:json_better_editor/editor/text_pane.dart';
 import 'package:json_better_editor/l10n/generated/app_localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -282,4 +283,69 @@ void main() {
     expect(editorText(tester), '[1, 2]');
     expect(controller.isDirty, isFalse);
   });
+
+  TextSpan lineSpan(WidgetTester tester, int index) {
+    final code = codeController(tester);
+    return code.buildTextSpan(
+      context: tester.element(find.byKey(TextPane.editorKey)),
+      index: index,
+      textSpan: TextSpan(text: code.codeLines[index].text),
+      style: const TextStyle(),
+    );
+  }
+
+  Map<String, Color?> colors(TextSpan line) => {
+    for (final s in line.children!.cast<TextSpan>())
+      if (s.text!.trim().isNotEmpty) s.text!: s.style?.color,
+  };
+
+  testWidgets(
+    'editor lines are syntax highlighted, also while invalid',
+    variant: macOS,
+    (tester) async {
+      await pumpWithFile(tester);
+      const style = SyntaxStyle.light;
+
+      var line = colors(lineSpan(tester, 2));
+      expect(line['"b"'], style.key);
+      expect(line['true'], style.boolean);
+      expect(line['null'], style.nullValue);
+      expect(line['['], style.punctuation);
+
+      await caretAt(tester, 1, 8);
+      await typeText(tester, ' "x');
+      expect(controller.textIsValid, isFalse);
+      line = colors(lineSpan(tester, 1));
+      expect(line['"a"'], style.key);
+      expect(line['1'], style.number);
+      expect(line['"x,'], style.string, reason: 'unterminated string');
+    },
+  );
+
+  Set<String> matched(TextSpan line) => {
+    for (final s in line.children!.cast<TextSpan>())
+      if (s.style?.backgroundColor == SyntaxStyle.light.matchBackground)
+        s.text!,
+  };
+
+  testWidgets(
+    'caret next to a bracket highlights it and its partner',
+    variant: macOS,
+    (tester) async {
+      await pumpWithFile(tester);
+
+      await caretAt(tester, 0, 1); // after `{`
+      expect(matched(lineSpan(tester, 0)), {'{'});
+      expect(matched(lineSpan(tester, 3)), {'}'});
+
+      await caretAt(tester, 2, 8); // after `[`
+      expect(matched(lineSpan(tester, 0)), isEmpty);
+      expect(matched(lineSpan(tester, 2)), {'[', ']'});
+
+      await caretAt(tester, 1, 6); // between `:` and a space
+      for (var i = 0; i < 4; i++) {
+        expect(matched(lineSpan(tester, i)), isEmpty);
+      }
+    },
+  );
 }

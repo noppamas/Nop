@@ -2,6 +2,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:re_editor/re_editor.dart';
 
 import 'editor_controller.dart';
+import 'syntax/bracket_matcher.dart';
+import 'syntax/syntax_style.dart';
 
 /// The Text pane: an editable code editor for the document text (§1.1,
 /// §1.4), built on `re_editor` (decision 32).
@@ -23,16 +25,83 @@ class TextPane extends StatefulWidget {
 }
 
 class _TextPaneState extends State<TextPane> {
-  final CodeLineEditingController _code = CodeLineEditingController(
+  late final CodeLineEditingController _code = CodeLineEditingController(
     options: const CodeLineOptions(indentSize: TextPane.indentSize),
+    spanBuilder: _buildLineSpan,
   );
   int _loadedGeneration = -1;
+
+  /// Matched bracket/quote columns by line, for the caret's current pair.
+  Map<int, Set<int>> _matchedColumns = const {};
 
   @override
   void initState() {
     super.initState();
     _syncFromDocument();
     widget.controller.addListener(_syncFromDocument);
+    _code.addListener(_updateMatchedPair);
+  }
+
+  TextSpan _buildLineSpan({
+    required BuildContext context,
+    required int index,
+    required CodeLine codeLine,
+    required TextSpan textSpan,
+    required TextStyle style,
+  }) {
+    return buildHighlightedLine(
+      codeLine.text,
+      style,
+      SyntaxStyle.light,
+      highlightColumns: _matchedColumns[index] ?? const {},
+    );
+  }
+
+  /// Finds the bracket or quote pair at the caret and repaints if it moved.
+  void _updateMatchedPair() {
+    final selection = _code.selection;
+    var matched = const <int, Set<int>>{};
+    if (selection.isCollapsed) {
+      final codeLines = _code.codeLines;
+      final lines = [
+        for (var i = 0; i < codeLines.length; i++) codeLines[i].text,
+      ];
+      final pair = findMatchingPair(lines, (
+        line: selection.extentIndex,
+        column: selection.extentOffset,
+      ));
+      if (pair != null) {
+        final (a, b) = pair;
+        matched = {
+          a.line: {a.column},
+          b.line: {
+            ...?(a.line == b.line ? {a.column} : null),
+            b.column,
+          },
+        };
+      }
+    }
+    if (!_sameColumns(matched, _matchedColumns)) {
+      _matchedColumns = matched;
+      // Repaint after this frame: the editor may still be laying out the
+      // change that moved the caret.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _code.forceRepaint();
+      });
+    }
+  }
+
+  static bool _sameColumns(Map<int, Set<int>> a, Map<int, Set<int>> b) {
+    if (a.length != b.length) return false;
+    for (final entry in a.entries) {
+      final other = b[entry.key];
+      if (other == null ||
+          other.length != entry.value.length ||
+          !other.containsAll(entry.value)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @override
@@ -49,6 +118,7 @@ class _TextPaneState extends State<TextPane> {
   @override
   void dispose() {
     widget.controller.removeListener(_syncFromDocument);
+    _code.removeListener(_updateMatchedPair);
     _code.dispose();
     super.dispose();
   }
