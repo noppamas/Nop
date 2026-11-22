@@ -170,5 +170,9 @@
   "saveErrorMessage": "The file could not be written. Your document is still open and unchanged.",
   "@saveErrorMessage": {
     "description": "Body of the dialog shown when saving fails."
+  },
+  "documentEdited": "Edited",
+  "@documentEdited": {
+    "description": "Shown next to the document title when there are unsaved edits."
   }
 }

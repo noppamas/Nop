@@ -303,6 +303,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The file could not be written. Your document is still open and unchanged.'**
   String get saveErrorMessage;
+
+  /// Shown next to the document title when there are unsaved edits.
+  ///
+  /// In en, this message translates to:
+  /// **'Edited'**
+  String get documentEdited;
 }
 
 class _AppLocalizationsDelegate

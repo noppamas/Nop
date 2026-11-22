@@ -4,11 +4,12 @@ import 'package:json_better_editor/document/json_parser.dart';
 import 'package:json_better_editor/editor/dialogs/open_error_dialog.dart';
 import 'package:json_better_editor/editor/document_title.dart';
 import 'package:json_better_editor/editor/editor_controller.dart';
-import 'package:json_better_editor/editor/plain_text_view.dart';
+import 'package:json_better_editor/editor/text_pane.dart';
 import 'package:json_better_editor/editor/toolbar/editor_toolbar.dart';
 import 'package:json_better_editor/l10n/generated/app_localizations_en.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../support/editor_finders.dart';
 import '../support/fake_document_files.dart';
 
 const validText = '{"ok": true}';
@@ -60,7 +61,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(OpenErrorDialogKeys.dialog), findsNothing);
     expect(textOf(tester, DocumentTitle.titleKey), 'Untitled');
-    expect(find.byType(PlainTextView), findsNothing);
+    expect(find.byType(TextPane), findsNothing);
   });
 
   testWidgets('empty file shows the dialog at line 1, column 1', (
@@ -92,10 +93,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(textOf(tester, DocumentTitle.titleKey), 'good.json');
-    expect(
-      tester.widget<SelectableText>(find.byKey(PlainTextView.textKey)).data,
-      validText,
-    );
+    expect(editorText(tester), validText);
   });
 
   testWidgets('a file that cannot be read shows an error dialog', (

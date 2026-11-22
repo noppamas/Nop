@@ -35,7 +35,12 @@ step "unit and widget tests"
 step "build macOS (debug)"
 "$flutter_cmd" build macos --debug
 
-step "launch smoke test (macOS)"
-"$flutter_cmd" test integration_test -d macos
+step "integration tests on macOS (launch smoke test and real-disk tests)"
+# screenshot_test.dart only produces images (tool/screenshot.sh); skip it.
+integration_tests=()
+for f in integration_test/*_test.dart; do
+  [[ "$(basename "$f")" == "screenshot_test.dart" ]] || integration_tests+=("$f")
+done
+"$flutter_cmd" test "${integration_tests[@]}" -d macos
 
 printf '\nAll checks passed.\n'

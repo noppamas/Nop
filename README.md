@@ -30,6 +30,16 @@ This runs, in order:
 It stops at the first failure. There is no GitHub Actions workflow; checks run
 locally on the Mac.
 
+## Screenshot
+
+```bash
+tool/screenshot.sh build/screenshot.png
+```
+
+Opens the app with a sample file and captures the window (needs Screen
+Recording permission for the terminal; otherwise it saves the Flutter content
+without the window controls).
+
 ## Run the app
 
 ```bash

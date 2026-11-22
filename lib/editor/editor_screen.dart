@@ -12,7 +12,7 @@ import 'dialogs/save_error_dialog.dart';
 import 'document_title.dart';
 import 'editor_controller.dart';
 import 'editor_layout.dart';
-import 'plain_text_view.dart';
+import 'text_pane.dart';
 import 'toolbar/editor_toolbar.dart';
 
 /// The single-document editor window.
@@ -127,12 +127,15 @@ class _EditorScreenState extends State<EditorScreen> {
                         setState(() => _layout = layout),
                     onOpen: () => unawaited(_open()),
                   ),
-                  DocumentTitle(fileName: document?.fileName),
+                  DocumentTitle(
+                    fileName: document?.fileName,
+                    edited: _controller.isDirty,
+                  ),
                   const Divider(height: 1),
                   Expanded(
                     child: document == null
                         ? const SizedBox.expand()
-                        : PlainTextView(text: document.text),
+                        : TextPane(controller: _controller),
                   ),
                 ],
               );
