@@ -25,3 +25,7 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 ### Domain docs
 
 Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Implementing issues
+
+To implement an issue, follow the project skill `.claude/skills/implement/SKILL.md`: one branch and PR per issue, tests first, `tool/check.sh` passes locally, then an `[INFORM]` with evidence for every acceptance criterion and a review before merging.
