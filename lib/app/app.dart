@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../editor/editor_screen.dart';
 import '../l10n/generated/app_localizations.dart';
-import '../platform/window_title.dart';
+import '../platform/native_window.dart';
 import 'theme.dart';
 
 /// Root widget of JSON Better Editor.
@@ -19,7 +19,7 @@ class JsonEditorApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) {
         final title = AppLocalizations.of(context).appTitle;
-        unawaited(WindowTitle.set(title));
+        unawaited(NativeWindow.setTitle(title));
         return title;
       },
       theme: buildLightTheme(),

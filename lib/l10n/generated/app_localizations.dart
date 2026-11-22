@@ -99,6 +99,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'JSON Better Editor'**
   String get appTitle;
+
+  /// Document title shown when no file is open.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get untitledDocument;
+
+  /// Toolbar tooltip: create a new document.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get toolbarNew;
+
+  /// Toolbar tooltip: open a JSON file.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get toolbarOpen;
+
+  /// Toolbar tooltip: search keys and values.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get toolbarSearch;
+
+  /// Toolbar tooltip: show only the Text pane.
+  ///
+  /// In en, this message translates to:
+  /// **'Text only'**
+  String get toolbarLayoutTextOnly;
+
+  /// Toolbar tooltip: show only the Node pane.
+  ///
+  /// In en, this message translates to:
+  /// **'Node only'**
+  String get toolbarLayoutNodeOnly;
+
+  /// Toolbar tooltip: show Text and Node side by side.
+  ///
+  /// In en, this message translates to:
+  /// **'Split'**
+  String get toolbarLayoutSplit;
+
+  /// Toolbar tooltip: switch the UI language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get toolbarLanguage;
+
+  /// Toolbar tooltip: toggle light or dark theme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get toolbarTheme;
+
+  /// Toolbar tooltip: open Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get toolbarSettings;
 }
 
 class _AppLocalizationsDelegate
