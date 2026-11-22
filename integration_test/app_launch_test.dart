@@ -50,4 +50,65 @@ void main() {
       expect(controller.document!.fileName, 'ไทย sample.json');
     },
   );
+
+  test('round trip on the real disk: open, Save As, reopen', () async {
+    final dir = await Directory.systemTemp.createTemp('jbe_save');
+    addTearDown(() => dir.delete(recursive: true));
+    final source = File('${dir.path}/source.json');
+    const text = '{"ชื่อ":"สวัสดี",  "n":[1,2.50,null,true]}\n';
+    await source.writeAsString(text);
+    final files = _ScriptedSaveFiles('${dir.path}/copy');
+
+    final controller = EditorController(files: files);
+    await controller.openPath(source.path);
+    final saved = await controller.saveAs(
+      filterLabel: 'JSON',
+      untitledName: 'U',
+    );
+    expect(saved, isA<SaveSucceeded>());
+    expect(controller.document!.fileName, 'copy.json');
+
+    final reopened = EditorController(files: files);
+    expect(
+      await reopened.openPath('${dir.path}/copy.json'),
+      isA<OpenSucceeded>(),
+    );
+    expect(reopened.document!.text, text);
+    expect(await File('${dir.path}/copy.json').readAsString(), text);
+  });
+
+  test('a failed real write keeps the document', () async {
+    final dir = await Directory.systemTemp.createTemp('jbe_ro');
+    addTearDown(() async {
+      await Process.run('chmod', ['755', dir.path]);
+      await dir.delete(recursive: true);
+    });
+    final source = File('${dir.path}/doc.json');
+    await source.writeAsString('[1]');
+    final controller = EditorController(files: const SystemDocumentFiles());
+    await controller.openPath(source.path);
+    await Process.run('chmod', ['444', source.path]);
+
+    final result = await controller.save(
+      filterLabel: 'JSON',
+      untitledName: 'U',
+    );
+
+    expect(result, isA<SaveFailed>());
+    expect(controller.document!.text, '[1]');
+    expect(controller.document!.path, source.path);
+  });
+}
+
+/// Real disk access, with the save dialog answered by a fixed path.
+class _ScriptedSaveFiles extends SystemDocumentFiles {
+  const _ScriptedSaveFiles(this.savePath);
+
+  final String savePath;
+
+  @override
+  Future<String?> pickJsonSaveLocation({
+    required String filterLabel,
+    required String suggestedName,
+  }) async => ensureJsonExtension(savePath);
 }

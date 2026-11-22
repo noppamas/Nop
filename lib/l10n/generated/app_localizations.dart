@@ -291,6 +291,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'“,” or “]”'**
   String get jsonExpectedCommaOrCloseBracket;
+
+  /// Title of the dialog shown when saving fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Can’t save “{fileName}”'**
+  String saveErrorTitle(String fileName);
+
+  /// Body of the dialog shown when saving fails.
+  ///
+  /// In en, this message translates to:
+  /// **'The file could not be written. Your document is still open and unchanged.'**
+  String get saveErrorMessage;
 }
 
 class _AppLocalizationsDelegate
