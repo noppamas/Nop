@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "JSON Better Editor",
+  "@appTitle": {
+    "description": "Application name, used for the window title."
+  }
+}
