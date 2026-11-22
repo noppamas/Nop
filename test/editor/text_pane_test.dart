@@ -348,4 +348,101 @@ void main() {
       }
     },
   );
+
+  CodeChunkController chunks(WidgetTester tester) => tester
+      .widget<DefaultCodeChunkIndicator>(find.byKey(TextPane.foldGutterKey))
+      .controller;
+
+  /// Lets the chunk analysis (run in a background isolate) finish: waits in
+  /// real time until the chunks stop changing, up to 10 seconds.
+  Future<void> settleChunks(WidgetTester tester) async {
+    var last = '';
+    var stable = 0;
+    for (var i = 0; i < 100 && stable < 3; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pump();
+      final now = chunks(tester).value.map((c) => '${c.index}-${c.end}').join();
+      stable = now == last && now.isNotEmpty ? stable + 1 : 0;
+      last = now;
+    }
+    await tester.pumpAndSettle();
+  }
+
+  const nested = '{\n  "a": {\n    "b": [\n      1\n    ]\n  },\n  "c": 2\n}';
+
+  testWidgets(
+    'multi-line blocks get fold controls in the gutter',
+    variant: macOS,
+    (tester) async {
+      await pumpWithFile(tester, nested);
+      await settleChunks(tester);
+
+      expect(chunks(tester).value.map((c) => (c.index, c.end)), [
+        (0, 7),
+        (1, 5),
+        (2, 4),
+      ]);
+    },
+  );
+
+  testWidgets(
+    'clicking a fold control hides and shows the block',
+    variant: macOS,
+    (tester) async {
+      await pumpWithFile(tester, nested);
+      await settleChunks(tester);
+      final code = codeController(tester);
+      expect(code.codeLines.length, 8);
+
+      // Click the fold control on line 2 (`"a": {`).
+      final gutter = tester.getRect(find.byKey(TextPane.foldGutterKey));
+      const lineHeight = 13 * 1.4;
+      Offset lineCenter(int line) =>
+          Offset(gutter.center.dx, gutter.top + 8 + lineHeight * (line + 0.5));
+      await tester.tapAt(lineCenter(1));
+      await tester.pumpAndSettle();
+
+      // Inner lines 3-5 are hidden; the closing `},` stays visible.
+      expect(code.codeLines.length, 5);
+      expect(code.codeLines[1].text, '  "a": {');
+      expect(code.codeLines[1].chunkParent, isTrue);
+      expect(code.codeLines[2].text, '  },');
+      expect(code.text, nested, reason: 'folding keeps the text');
+      expect(controller.isDirty, isFalse);
+
+      await tester.tapAt(lineCenter(1));
+      await tester.pumpAndSettle();
+      expect(code.codeLines.length, 8);
+      expect(code.text, nested);
+    },
+  );
+
+  testWidgets(
+    'nested folds keep their state and saving writes everything',
+    variant: macOS,
+    (tester) async {
+      await pumpWithFile(tester, nested);
+      await settleChunks(tester);
+      final code = codeController(tester);
+
+      chunks(tester).collapse(2); // inner array: hides `1`
+      await settleChunks(tester);
+      expect(code.codeLines.length, 7);
+      chunks(tester).collapse(1); // parent object: hides `"b": [ … ]`
+      await settleChunks(tester);
+      expect(code.codeLines.length, 5);
+
+      await press(tester, LogicalKeyboardKey.keyS, meta: true);
+      expect(files.disk['/d/doc.json'], nested);
+
+      chunks(tester).expand(1);
+      await settleChunks(tester);
+      expect(code.codeLines.length, 7, reason: 'inner array still folded');
+      expect(code.codeLines[2].text, '    "b": [');
+      expect(code.codeLines[2].chunkParent, isTrue);
+      expect(code.text, nested);
+    },
+  );
 }

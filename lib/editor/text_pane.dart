@@ -3,6 +3,7 @@ import 'package:re_editor/re_editor.dart';
 
 import 'editor_controller.dart';
 import 'syntax/bracket_matcher.dart';
+import 'syntax/json_chunk_analyzer.dart';
 import 'syntax/syntax_style.dart';
 
 /// The Text pane: an editable code editor for the document text (§1.1,
@@ -14,6 +15,7 @@ class TextPane extends StatefulWidget {
   const TextPane({super.key, required this.controller});
 
   static const editorKey = ValueKey('textPane.editor');
+  static const foldGutterKey = ValueKey('textPane.foldGutter');
 
   /// Indent unit for Tab / Shift+Tab (matches the save format, decision 33).
   static const indentSize = 2;
@@ -189,15 +191,32 @@ class _TextPaneState extends State<TextPane> {
         backgroundColor: colors.surface,
         cursorColor: colors.primary,
         selectionColor: colors.primary.withValues(alpha: 0.25),
+        chunkIndicatorColor: colors.outline,
         cursorLineColor: colors.surfaceContainerHighest.withValues(alpha: 0.5),
       ),
+      chunkAnalyzer: const JsonChunkAnalyzer(),
       indicatorBuilder:
           (context, editingController, chunkController, notifier) {
-            return DefaultCodeLineNumber(
-              controller: editingController,
-              notifier: notifier,
-              textStyle: mono.copyWith(color: colors.outline),
-              focusedTextStyle: mono.copyWith(color: colors.onSurfaceVariant),
+            return Row(
+              children: [
+                DefaultCodeLineNumber(
+                  controller: editingController,
+                  notifier: notifier,
+                  textStyle: mono.copyWith(color: colors.outline),
+                  focusedTextStyle: mono.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+                DefaultCodeChunkIndicator(
+                  key: TextPane.foldGutterKey,
+                  width: 20,
+                  controller: chunkController,
+                  notifier: notifier,
+                  painter: DefaultCodeChunkIndicatorPainter(
+                    color: colors.outline,
+                  ),
+                ),
+              ],
             );
           },
       leadingDivider: Container(width: 1, color: colors.outlineVariant),

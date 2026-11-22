@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 # Takes a full-window screenshot of the app with a sample file open.
-# Usage: tool/screenshot.sh [output.png]   (default: build/screenshot.png)
+# Usage: tool/screenshot.sh [output.png] [extra flutter test args]
+#   e.g. tool/screenshot.sh build/fold.png --dart-define=SCREENSHOT_FOLD_LINE=5
 # Needs Screen Recording permission for the terminal app.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 out="${1:-build/screenshot.png}"
+shift || true
 mkdir -p "$(dirname "$out")"
 if [[ -n "${FLUTTER:-}" ]]; then flutter_cmd="$FLUTTER"
 elif command -v flutter >/dev/null 2>&1; then flutter_cmd=flutter
 else flutter_cmd="$HOME/Documents/flutter/bin/flutter"; fi
 
 log="$(mktemp)"
-"$flutter_cmd" test integration_test/screenshot_test.dart -d macos >"$log" 2>&1 &
+"$flutter_cmd" test integration_test/screenshot_test.dart -d macos "$@" >"$log" 2>&1 &
 pid=$!
 for _ in $(seq 1 120); do
   grep -q SCREENSHOT "$log" && break
