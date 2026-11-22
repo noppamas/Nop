@@ -188,6 +188,6 @@ void main() {
 
   test('deep nesting fails cleanly', () {
     final text = '${'[' * 10000}${']' * 10000}';
-    expect(parseBad(text).message, contains('deep'));
+    expect(parseBad(text).kind, JsonErrorKind.tooDeep);
   });
 }

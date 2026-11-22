@@ -47,5 +47,115 @@
   "jsonFileTypeLabel": "JSON",
   "@jsonFileTypeLabel": {
     "description": "File type name in the open and save dialogs."
+  },
+  "dialogOk": "OK",
+  "@dialogOk": {
+    "description": "Button that closes an information dialog."
+  },
+  "openErrorTitle": "Can’t open “{fileName}”",
+  "@openErrorTitle": {
+    "description": "Title of the dialog shown when a file cannot be opened.",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "invalidJsonMessage": "This file is not valid JSON, so it was not opened.",
+  "@invalidJsonMessage": {
+    "description": "Explains that an invalid file was not opened."
+  },
+  "invalidJsonPosition": "Line {line}, column {column}",
+  "@invalidJsonPosition": {
+    "description": "Where the JSON error is.",
+    "placeholders": {
+      "line": {
+        "type": "int"
+      },
+      "column": {
+        "type": "int"
+      }
+    }
+  },
+  "readFailedMessage": "The file could not be read.",
+  "@readFailedMessage": {
+    "description": "Shown when reading a file from disk fails."
+  },
+  "jsonErrorEmptyDocument": "The file is empty.",
+  "@jsonErrorEmptyDocument": {
+    "description": "JSON error: no content."
+  },
+  "jsonErrorUnexpectedEnd": "The file ends where {expected} was expected.",
+  "@jsonErrorUnexpectedEnd": {
+    "description": "JSON error: file ends too early.",
+    "placeholders": {
+      "expected": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonErrorUnexpectedCharacter": "Found “{found}” where {expected} was expected.",
+  "@jsonErrorUnexpectedCharacter": {
+    "description": "JSON error: wrong character.",
+    "placeholders": {
+      "found": {
+        "type": "String"
+      },
+      "expected": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonErrorTrailingText": "There is extra text after the JSON value.",
+  "@jsonErrorTrailingText": {
+    "description": "JSON error: content after the root value."
+  },
+  "jsonErrorUnterminatedString": "A string is missing its closing quote.",
+  "@jsonErrorUnterminatedString": {
+    "description": "JSON error."
+  },
+  "jsonErrorControlCharacter": "A string contains a control character (such as a raw line break).",
+  "@jsonErrorControlCharacter": {
+    "description": "JSON error."
+  },
+  "jsonErrorInvalidEscape": "A string contains an invalid escape sequence.",
+  "@jsonErrorInvalidEscape": {
+    "description": "JSON error."
+  },
+  "jsonErrorInvalidUnicodeEscape": "A string contains an invalid \\u escape.",
+  "@jsonErrorInvalidUnicodeEscape": {
+    "description": "JSON error."
+  },
+  "jsonErrorInvalidNumber": "A number is not written correctly.",
+  "@jsonErrorInvalidNumber": {
+    "description": "JSON error."
+  },
+  "jsonErrorLeadingZero": "A number starts with an extra zero.",
+  "@jsonErrorLeadingZero": {
+    "description": "JSON error."
+  },
+  "jsonErrorTooDeep": "The data is nested too deeply.",
+  "@jsonErrorTooDeep": {
+    "description": "JSON error."
+  },
+  "jsonExpectedValue": "a value",
+  "@jsonExpectedValue": {
+    "description": "Inserted into JSON error messages."
+  },
+  "jsonExpectedKey": "a key in double quotes",
+  "@jsonExpectedKey": {
+    "description": "Inserted into JSON error messages."
+  },
+  "jsonExpectedColon": "“:”",
+  "@jsonExpectedColon": {
+    "description": "Inserted into JSON error messages."
+  },
+  "jsonExpectedCommaOrCloseBrace": "“,” or “'}'”",
+  "@jsonExpectedCommaOrCloseBrace": {
+    "description": "Inserted into JSON error messages."
+  },
+  "jsonExpectedCommaOrCloseBracket": "“,” or “]”",
+  "@jsonExpectedCommaOrCloseBracket": {
+    "description": "Inserted into JSON error messages."
   }
 }

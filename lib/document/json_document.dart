@@ -16,8 +16,12 @@ class JsonDocument {
   /// File name shown as the document title, or null when unsaved.
   String? get fileName {
     final p = path;
-    if (p == null) return null;
-    final slash = p.lastIndexOf('/');
-    return slash < 0 ? p : p.substring(slash + 1);
+    return p == null ? null : fileNameOf(p);
   }
+}
+
+/// The last component of a POSIX [path].
+String fileNameOf(String path) {
+  final slash = path.lastIndexOf('/');
+  return slash < 0 ? path : path.substring(slash + 1);
 }

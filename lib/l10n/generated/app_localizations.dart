@@ -165,6 +165,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'JSON'**
   String get jsonFileTypeLabel;
+
+  /// Button that closes an information dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get dialogOk;
+
+  /// Title of the dialog shown when a file cannot be opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Can’t open “{fileName}”'**
+  String openErrorTitle(String fileName);
+
+  /// Explains that an invalid file was not opened.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not valid JSON, so it was not opened.'**
+  String get invalidJsonMessage;
+
+  /// Where the JSON error is.
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line}, column {column}'**
+  String invalidJsonPosition(int line, int column);
+
+  /// Shown when reading a file from disk fails.
+  ///
+  /// In en, this message translates to:
+  /// **'The file could not be read.'**
+  String get readFailedMessage;
+
+  /// JSON error: no content.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is empty.'**
+  String get jsonErrorEmptyDocument;
+
+  /// JSON error: file ends too early.
+  ///
+  /// In en, this message translates to:
+  /// **'The file ends where {expected} was expected.'**
+  String jsonErrorUnexpectedEnd(String expected);
+
+  /// JSON error: wrong character.
+  ///
+  /// In en, this message translates to:
+  /// **'Found “{found}” where {expected} was expected.'**
+  String jsonErrorUnexpectedCharacter(String found, String expected);
+
+  /// JSON error: content after the root value.
+  ///
+  /// In en, this message translates to:
+  /// **'There is extra text after the JSON value.'**
+  String get jsonErrorTrailingText;
+
+  /// JSON error.
+  ///
+  /// In en, this message translates to:
+  /// **'A string is missing its closing quote.'**
+  String get jsonErrorUnterminatedString;
+
+  /// JSON error.
+  ///
+  /// In en, this message translates to:
+  /// **'A string contains a control character (such as a raw line break).'**
+  String get jsonErrorControlCharacter;
+
+  /// JSON error.
+  ///
+  /// In en, this message translates to:
+  /// **'A string contains an invalid escape sequence.'**
+  String get jsonErrorInvalidEscape;
+
+  /// JSON error.
+  ///
+  /// In en, this message translates to:
+  /// **'A string contains an invalid \\u escape.'**
+  String get jsonErrorInvalidUnicodeEscape;
+
+  /// JSON error.
+  ///
+  /// In en, this message translates to:
+  /// **'A number is not written correctly.'**
+  String get jsonErrorInvalidNumber;
+
+  /// JSON error.
+  ///
+  /// In en, this message translates to:
+  /// **'A number starts with an extra zero.'**
+  String get jsonErrorLeadingZero;
+
+  /// JSON error.
+  ///
+  /// In en, this message translates to:
+  /// **'The data is nested too deeply.'**
+  String get jsonErrorTooDeep;
+
+  /// Inserted into JSON error messages.
+  ///
+  /// In en, this message translates to:
+  /// **'a value'**
+  String get jsonExpectedValue;
+
+  /// Inserted into JSON error messages.
+  ///
+  /// In en, this message translates to:
+  /// **'a key in double quotes'**
+  String get jsonExpectedKey;
+
+  /// Inserted into JSON error messages.
+  ///
+  /// In en, this message translates to:
+  /// **'“:”'**
+  String get jsonExpectedColon;
+
+  /// Inserted into JSON error messages.
+  ///
+  /// In en, this message translates to:
+  /// **'“,” or “\'}\'”'**
+  String get jsonExpectedCommaOrCloseBrace;
+
+  /// Inserted into JSON error messages.
+  ///
+  /// In en, this message translates to:
+  /// **'“,” or “]”'**
+  String get jsonExpectedCommaOrCloseBracket;
 }
 
 class _AppLocalizationsDelegate
